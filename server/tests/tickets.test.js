@@ -1,4 +1,3 @@
-// tests/tickets.test.js
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import app from '../src/server.js';
@@ -10,7 +9,7 @@ describe('Tickets API', () => {
     const res = await request(app)
       .post('/api/tickets')
       .send({ title: 'Login broken', priority: 'high' });
-    
+
     expect(res.status).toBe(201);
     expect(res.body.id).toBeDefined();
     expect(res.body.status).toBe('open');
@@ -20,8 +19,8 @@ describe('Tickets API', () => {
   it('POST /api/tickets - should return 400 for invalid data', async () => {
     const res = await request(app)
       .post('/api/tickets')
-      .send({ title: 'Lo', priority: 'high' }); // Title too short
-    
+      .send({ title: 'Lo', priority: 'high' });
+
     expect(res.status).toBe(400);
     expect(res.body.error.details[0].context.key).toBe('title');
   });

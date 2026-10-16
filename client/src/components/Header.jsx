@@ -3,8 +3,6 @@ import { Ticket, Sun, Moon, Globe } from 'lucide-react';
 export default function Header({ isDark, onToggleDark, lang, onToggleLang, t }) {
   return (
     <header className="px-6 py-5 border-b border-gray-200/80 dark:border-gray-700/80 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      
-      {/* Brand Title & Icon */}
       <div className="flex items-center gap-3">
         <div className="p-2.5 bg-blue-600 dark:bg-blue-500 text-white rounded-xl shadow-sm shadow-blue-500/20 flex items-center justify-center">
           <Ticket className="w-6 h-6"/>
@@ -16,10 +14,7 @@ export default function Header({ isDark, onToggleDark, lang, onToggleLang, t }) 
         </div>
       </div>
 
-      {/* Action Toggles */}
       <div className="flex items-center gap-2.5 self-end sm:self-auto">
-        
-        {/* Dark Mode Switch */}
         <button
           onClick={onToggleDark}
           type="button"
@@ -39,7 +34,6 @@ export default function Header({ isDark, onToggleDark, lang, onToggleLang, t }) 
           )}
         </button>
 
-        {/* Language Switch */}
         <button
           onClick={onToggleLang}
           type="button"

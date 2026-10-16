@@ -22,7 +22,6 @@ export default function App() {
     document.documentElement.lang = lang;
   }, [isDark, lang]);
 
-  // DELETE handler
   const handleDelete = async (id) => {
     try {
       const res = await fetch(`http://localhost:3000/api/tickets/${id}`, {
@@ -31,7 +30,6 @@ export default function App() {
 
       if (!res.ok) throw new Error('Failed to delete ticket');
 
-      // Trigger a re-fetch to update the list
       setRefreshTrigger(prev => prev + 1);
     } catch (err) {
       alert(err.message);

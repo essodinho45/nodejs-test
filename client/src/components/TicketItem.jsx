@@ -27,8 +27,6 @@ export default function TicketItem({ ticket, updateStatus, onDelete, t }) {
 
   return (
     <li className="p-4 sm:px-5 hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
-      
-      {/* Left Side: Status Icon + Title + Badges */}
       <div className="flex items-start gap-3.5">
         <div className={`mt-1 shrink-0 ${iconColor}`}>
           <StatusIcon className="w-5 h-5" />
@@ -52,8 +50,7 @@ export default function TicketItem({ ticket, updateStatus, onDelete, t }) {
           </div>
         </div>
       </div>
-      
-      {/* Right Side: Status Selector & Delete Button */}
+
       <div className="flex items-center gap-2.5 self-end sm:self-center w-full sm:w-auto">
         <select 
           value={ticket.status} 

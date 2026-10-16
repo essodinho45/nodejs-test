@@ -2,7 +2,6 @@ import { Ticket } from '../models/Ticket.js';
 import Joi from 'joi';
 import createError from 'http-errors';
 
-// Validation Schemas
 const querySchema = Joi.object({
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(50).default(10),
@@ -21,7 +20,6 @@ const updateTicketSchema = Joi.object({
   status: Joi.string().valid('open', 'in_progress', 'closed')
 }).min(1);
 
-// Controller Methods
 export const getTickets = (req, res, next) => {
   try {
     const { error, value } = querySchema.validate(req.query);
@@ -29,7 +27,6 @@ export const getTickets = (req, res, next) => {
 
     let filtered = Ticket.find();
 
-    // Apply filters
     if (value.status) filtered = filtered.filter(t => t.status === value.status);
     if (value.q) {
       const qLower = value.q.toLowerCase();
@@ -38,7 +35,6 @@ export const getTickets = (req, res, next) => {
 
     filtered.sort((a, b) => b.createdAt - a.createdAt);
 
-    // Pagination
     const startIndex = (value.page - 1) * value.limit;
     const paginated = filtered.slice(startIndex, startIndex + value.limit);
 

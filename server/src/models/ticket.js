@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 
-// Our in-memory "database"
 let tickets = [];
 
 export const Ticket = {

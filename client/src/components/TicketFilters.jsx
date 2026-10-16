@@ -3,8 +3,6 @@ import { Search, ListFilter, X } from 'lucide-react';
 export default function TicketFilters({ filters, onChange, t }) {
   return (
     <div className="flex flex-col sm:flex-row gap-3.5 mb-6">
-      
-      {/* Search Input with Embedded Icon */}
       <div className="relative flex-1">
         <Search className="w-4 h-4 text-gray-400 dark:text-gray-400 absolute start-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         <input 
@@ -25,7 +23,6 @@ export default function TicketFilters({ filters, onChange, t }) {
         )}
       </div>
 
-      {/* Status Dropdown with Embedded Icon */}
       <div className="relative sm:w-52">
         <ListFilter className="w-4 h-4 text-gray-400 dark:text-gray-400 absolute start-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         <select 
