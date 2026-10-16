@@ -1,0 +1,25 @@
+services:
+  api:
+    build: ./server
+    container_name: tickets-api
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DB_PATH=/app/data/tickets.db
+    volumes:
+      - sqlite_data:/app/data
+    restart: unless-stopped
+
+  client:
+    build: ./client
+    container_name: tickets-client
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  sqlite_data:

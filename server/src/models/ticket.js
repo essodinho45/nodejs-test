@@ -1,7 +1,9 @@
 import { DatabaseSync } from 'node:sqlite';
 import crypto from 'crypto';
 
-const dbPath = process.env.NODE_ENV === 'test' ? ':memory:' : './tickets.db';
+const dbPath = process.env.NODE_ENV === 'test' 
+  ? ':memory:' 
+  : (process.env.DB_PATH || './tickets.db');
 const db = new DatabaseSync(dbPath);
 
 db.exec(`
