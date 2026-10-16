@@ -143,5 +143,3 @@ Instead of pulling in an external state library, `useTickets.js` demonstrates co
    - Expose the optional `description` field in the UI via an expandable drawer or modal, allowing agents to edit ticket titles and descriptions inline.
 4. **End-to-End & Frontend Component Testing**:
    - Expand backend Vitest coverage to test `PATCH` edge cases, `DELETE` 404s, and pagination caps (`limit > 50`), and add **React Testing Library** tests to verify optimistic rollback behavior in the UI.
-5. **Dockerization**:
-   - Add a `Dockerfile` and `docker-compose.yml` to spin up both the API and the Vite client with a single `docker compose up` command.
