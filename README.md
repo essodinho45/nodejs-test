@@ -1,6 +1,6 @@
 # Support Tickets Mini App
 
-A full-stack ticket tracking application built with a **Node.js + Express** REST API (structured with a clean MVC pattern) and a **React + Vite + Tailwind CSS v4** frontend. It features optimistic UI updates, debounced search with race-condition protection, manual dark/light theming, and full English/Arabic (LTR/RTL) localization.
+A full-stack ticket tracking application built with a **Node.js + Express** REST API (structured with a clean MVC pattern) and a **React + Vite + Tailwind CSS v4** frontend. It features optimistic UI updates, debounced search with race-condition protection, manual dark/light theming, full English/Arabic (LTR/RTL) localization, and complete Docker containerization.
 
 ---
 
@@ -9,7 +9,10 @@ A full-stack ticket tracking application built with a **Node.js + Express** REST
 ```text
 support-tickets-app/
 ├── README.md
+├── docker-compose.yml             # Orchestrates API & Client containers + SQLite volume
 ├── server/                        # Node.js + Express Backend (ES Modules)
+│   ├── Dockerfile                 # Backend container configuration
+│   ├── .dockerignore
 │   ├── package.json
 │   ├── src/
 │   │   ├── server.js              # Express app setup & centralized error middleware
@@ -23,6 +26,8 @@ support-tickets-app/
 │       └── tickets.test.js        # Integration tests (Vitest + Supertest)
 │
 └── client/                        # React + Vite + Tailwind CSS v4 Frontend
+    ├── Dockerfile                 # Frontend container configuration
+    ├── .dockerignore
     ├── package.json
     ├── vite.config.js
     └── src/
@@ -42,13 +47,40 @@ support-tickets-app/
 
 ---
 
-## Prerequisites & Setup Instructions
+## Setup & Running the App
 
-### Prerequisites
-- **Node.js**: v22.5.0 or higher (Tested on v26.x — required if using the built-in `node:sqlite` driver).
+You can run this project either **via Docker (Recommended)** or **Locally with Node.js**.
+
+### Option A: Quick Start with Docker (Recommended)
+
+Ensure **Docker Desktop** (or Docker Engine + Compose) is installed and running.
+
+1. **Build and start both containers from the project root:**
+   ```bash
+   docker compose up --build
+   ```
+   - **Frontend UI**: [http://localhost:5173](http://localhost:5173)
+   - **Backend API**: [http://localhost:3000/api/tickets](http://localhost:3000/api/tickets)
+
+2. **Stop the containers (retains your SQLite database in the `sqlite_data` volume):**
+   ```bash
+   docker compose down
+   ```
+
+3. **Stop the containers and wipe the SQLite database volume (fresh reset):**
+   ```bash
+   docker compose down -v
+   ```
+
+---
+
+### Option B: Local Manual Setup
+
+#### Prerequisites
+- **Node.js**: v22.5.0 or higher (Tested on v26.x — required for the built-in `node:sqlite` driver).
 - **npm**: v10+
 
-### 1. Backend Setup (`/server`)
+#### 1. Backend Setup (`/server`)
 Open a terminal and navigate to the backend directory:
 ```bash
 cd server
@@ -65,14 +97,14 @@ Run the automated test suite (Vitest + Supertest):
 npm test
 ```
 
-### 2. Frontend Setup (`/client`)
+#### 2. Frontend Setup (`/client`)
 Open a second terminal and navigate to the frontend directory:
 ```bash
 cd client
 npm install
 ```
 
-Start the Vite development server (typically runs on `http://localhost:5173`):
+Start the Vite development server (runs on `http://localhost:5173`):
 ```bash
 npm run dev
 ```
@@ -98,8 +130,9 @@ Rather than placing validation, storage logic, and HTTP responses directly insid
 - **Controllers (`controllers/ticketController.js`)**: Validates incoming queries and payloads using **Joi** schemas and formats HTTP responses (`201`, `204`, `400`, `404`).
 - **Models (`models/Ticket.js`)**: Encapsulates all data access. Because the controller only calls methods like `Ticket.findAll()` or `Ticket.create()`, the underlying storage engine can be swapped between an **in-memory array** and **Node's native `node:sqlite`** without touching a single line of controller or route code.
 
-### 2. Storage Choice: Native SQLite (`node:sqlite`) / In-Memory Fallback
+### 2. Storage Choice: Native SQLite (`node:sqlite`) & Docker Volume Persistence
 - **Zero External Dependencies**: Modern Node.js includes the built-in `node:sqlite` module (`DatabaseSync`). This provides true SQL persistence (`tickets.db`), prepared statements for SQL-injection safety, and native `WHERE` / `LIMIT` / `OFFSET` pagination without requiring third-party C++ binaries or external database servers.
+- **Configurable Path for Docker**: `Ticket.js` reads `process.env.DB_PATH || './tickets.db'`, allowing `docker-compose.yml` to mount a persistent named volume (`sqlite_data:/app/data`) so database records survive container restarts.
 - **Test Isolation**: When `process.env.NODE_ENV === 'test'`, the database automatically switches to `:memory:`, ensuring Supertest runs fast and leaves no leftover test artifacts on disk.
 
 ### 3. Centralized Error Handling
@@ -115,7 +148,7 @@ Instead of pulling in an external state library, `useTickets.js` demonstrates co
 
 ### 5. Styling, Dark Mode, and RTL Localization
 - **Tailwind CSS v4**: Configured with the zero-config `@tailwindcss/vite` plugin and `@variant dark (&:where(.dark, .dark *));` for explicit class-based dark mode toggling rather than relying strictly on OS defaults.
-- **Birectional Layout (EN / AR)**: Toggling the language updates `document.documentElement.dir` (`ltr` vs. `rtl`). Components use Tailwind's logical properties (`ps-`, `pe-`, `start-`, `end-`, `rtl:rotate-180`) so embedded input icons and pagination arrows automatically mirror in Arabic.
+- **Bidirectional Layout (EN / AR)**: Toggling the language updates `document.documentElement.dir` (`ltr` vs. `rtl`). Components use Tailwind's logical properties (`ps-`, `pe-`, `start-`, `end-`, `rtl:rotate-180`) so embedded input icons and pagination arrows automatically mirror in Arabic.
 
 ---
 
@@ -135,7 +168,7 @@ Instead of pulling in an external state library, `useTickets.js` demonstrates co
 
 ## What I Would Do With More Time
 
-1. **Authentication & Role-Based Access Control (Bonus)**:
+1. **Authentication & Role-Based Access Control**:
    - Add JWT authentication middleware on the backend with `agent` (write/delete permissions) and `viewer` (read-only) roles, paired with a role-switcher in the React header to preview permissions.
 2. **Migrate Data Fetching to TanStack Query**:
    - Replace the manual `refreshTrigger` and optimistic rollback boilerplate with `useQuery` and `useMutation` for automatic cache invalidation, retry logic, and deduplicated requests.
@@ -143,3 +176,5 @@ Instead of pulling in an external state library, `useTickets.js` demonstrates co
    - Expose the optional `description` field in the UI via an expandable drawer or modal, allowing agents to edit ticket titles and descriptions inline.
 4. **End-to-End & Frontend Component Testing**:
    - Expand backend Vitest coverage to test `PATCH` edge cases, `DELETE` 404s, and pagination caps (`limit > 50`), and add **React Testing Library** tests to verify optimistic rollback behavior in the UI.
+5. **Multi-Stage Production Nginx Build for Frontend Container**:
+   - Upgrade `client/Dockerfile` to a multi-stage build that compiles static assets via `npm run build` and serves them through `nginx:alpine` with a reverse proxy for `/api`.
